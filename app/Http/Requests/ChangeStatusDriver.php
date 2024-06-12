@@ -5,10 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Rules\VerifyUniqueVehicleDefault;
-use Illuminate\Support\Facades\Log;
 
-class UpdateVehicleRequest extends FormRequest
+class ChangeStatusDriver extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +24,7 @@ class UpdateVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "model" => "required|string",
-            "make" => "required|string",
-            "license_plate" => "required|string",
-            "color" => "required|string",
-            "year" => "required|integer",
-            "default" => ["required", "boolean", new VerifyUniqueVehicleDefault($this->request->all())]
+            'is_available' => 'required|boolean'
         ];
     }
 
@@ -44,11 +37,8 @@ class UpdateVehicleRequest extends FormRequest
      public function messages(): array
      {
          return [
-                'model.required' => 'Model is required',
-                'make.required' => 'Make is required',
-                'license_plate.required' => 'License plate is required',
-                'color.required' => 'Color is required',
-                'year.required' => 'Year is required',
+            'is_available.required' => 'Availability is required',
+            'is_available.boolean' => 'Availability must be a boolean'
          ];
      }
  

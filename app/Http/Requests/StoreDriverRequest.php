@@ -29,6 +29,7 @@ class StoreDriverRequest extends FormRequest
             'email' => 'required|email|unique:users',
             'license_number' => 'required|string|unique:drivers',
             'license_expiry' => 'required|date',
+            'password' => 'required|string'
         ];
     }
 
@@ -42,7 +43,18 @@ class StoreDriverRequest extends FormRequest
     {
         return [
             'phone.required' => 'Phone number is required',
-            'phone.string' => 'Phone number must be a string'
+            'phone.string' => 'Phone number must be a string',
+            'phone.unique' => 'Phone number already exists',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email must be a valid email address',
+            'email.unique' => 'Email already exists',
+            'license_number.required' => 'License number is required',
+            'license_number.string' => 'License number must be a string',
+            'license_number.unique' => 'License number already exists',
+            'license_expiry.required' => 'License expiry date is required',
+            'license_expiry.date' => 'License expiry date must be a valid date',
+            'password.required' => 'Password is required',
+            'password.string' => 'Password must be a string'
         ];
     }
 

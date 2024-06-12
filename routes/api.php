@@ -11,7 +11,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/driver', [App\Http\Controllers\DriverController::class, 'show']);
-Route::post('/create/driver', [App\Http\Controllers\DriverController::class, 'store']);
+Route::post('/register/driver', [App\Http\Controllers\DriverController::class, 'store']);
 
 Route::post('/auth/login', function (Request $request) {
     $request->validate([
@@ -32,5 +32,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         return $request->user();
     });
 
-    Route::apiResource('vehicle', App\Http\Controllers\VehicleController::class);
+    // Route::apiResource('vehicle', App\Http\Controllers\VehicleController::class);
+    Route::post('/vehicle', [App\Http\Controllers\VehicleController::class, 'store']);
+    Route::get('/vehicles', [App\Http\Controllers\VehicleController::class, 'show']);
+    Route::put('/vehicle', [App\Http\Controllers\VehicleController::class, 'update']);
+    Route::delete('/vehicle', [App\Http\Controllers\VehicleController::class, 'destroy']);
+
+    Route::post('/status/driver', [App\Http\Controllers\DriverController::class, 'status']);
+    Route::get('/drivers', [App\Http\Controllers\DriverController::class, 'index']);
 });

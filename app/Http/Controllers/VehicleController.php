@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
+use App\Http\Requests\DeleteVehicle;
 use App\Models\Vehicle;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class VehicleController extends Controller
                     'year' => $data['year'],
                     'driver_id' => $driver->id,
                 ]);
-                return response()->json($vehicle);
+                return response()->json($vehicle, 201);
             }
         }
         return response()->json(['message' => 'Driver not found']);
@@ -54,9 +55,9 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($phone)
+    public function show()
     {
-        $user = User::where('phone', $phone)->where('user_type')->first();
+        $user = auth()->user();
         if ($user) {
             $driver = $user->driver;
             if ($driver) {
@@ -64,7 +65,7 @@ class VehicleController extends Controller
                 return response()->json($vehicles);
             }
         }
-        return response()->json(['message' => 'Driver not found']);
+        return response()->json(['message' => 'Driver or vehicles not found']);
     }
 
     /**
@@ -80,14 +81,37 @@ class VehicleController extends Controller
      */
     public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
-        //
+        $user = $request->user();
+        if ($user) {
+            $driver = $user->driver;
+            if ($driver) {
+                $vehicle = $vehicle->where('driver_id', $driver->id)->where('license_plate', $request->license_plate)->first();
+                if ($vehicle) {
+                    $data = $request->validated();
+                    $vehicle->update($data);
+                    return response()->json($vehicle);
+                }
+            }
+        }
+        return response()->json(['message' => 'Driver or vehicle not found'], 404);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vehicle $vehicle)
+    public function destroy(DeleteVehicle $request, Vehicle $vehicle)
     {
-        //
+        $data = $request->validated();
+        $user = $request->user();
+        if ($user) {
+            $driver = $user->driver;
+            if ($driver) {
+                $vehicle = $vehicle->where('driver_id', $driver->id)->where('license_plate', $data['license_plate'])->first();
+                if ($vehicle) {
+                    $vehicle->delete();
+                    return response()->json(['message' => 'Vehicle deleted'], 200);
+                }
+            }
+        }
     }
 }

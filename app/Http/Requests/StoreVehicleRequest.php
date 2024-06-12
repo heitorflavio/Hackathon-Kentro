@@ -26,7 +26,7 @@ class StoreVehicleRequest extends FormRequest
         return [
             "model" => "required|string",
             "make" => "required|string",
-            "license_plate" => "required|string",
+            "license_plate" => "required|string|unique:vehicles",
             "color" => "required|string",
             "year" => "required|integer",
         ];

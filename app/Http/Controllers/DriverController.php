@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDriverRequest;
 use App\Http\Requests\UpdateDriverRequest;
 use App\Http\Requests\ShowDriver;
+use App\Http\Requests\ChangeStatusDriver;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Driver;
+use App\Models\Vehicle;
 
 class DriverController extends Controller
 {
@@ -16,7 +18,11 @@ class DriverController extends Controller
      */
     public function index()
     {
-        //
+        $drivers = Driver::where('is_available', 1)->get();
+        return response()->json([
+            'has_drivers' => $drivers->count() > 0 ? true : false,
+            'message' => $drivers->count() > 0 ? 'Drivers available' : 'No drivers available',
+        ]);
     }
 
     /**
@@ -38,7 +44,7 @@ class DriverController extends Controller
             'name' => $data['name'],
             'phone' => $data['phone'],
             'email' => $data['email'],
-            'password' => bcrypt('password'),
+            'password' => bcrypt($data['password']),
             'user_type' => 'Driver'
         
         ]);
@@ -87,5 +93,21 @@ class DriverController extends Controller
     public function destroy(Driver $driver)
     {
         //
+    }
+
+    public function status(ChangeStatusDriver $request)
+    {
+        $data = $request->validated();
+        $driver = auth()->user()->driver;
+        $vehicles = Vehicle::where('driver_id', $driver->id)->where('default', 1)->get();
+
+        if ($driver && $vehicles->count() > 0){
+            $driver->update([
+               'is_available' => $data['is_available']
+            ]);
+            return response()->json($driver);
+        }
+
+        return response()->json(['message' => 'Driver or vehicle not found'], 404);
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('make');
             $table->string('model');
             $table->string('license_plate')->unique();
+            $table->boolean('default')->default(false);
             $table->string('color');
             $table->year('year');
             $table->timestamps();

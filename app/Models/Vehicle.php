@@ -21,5 +21,6 @@ class Vehicle extends Model
         "color",
         "year",
         "driver_id",
+        "default"
     ];
 }
