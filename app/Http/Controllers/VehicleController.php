@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
 use App\Models\Vehicle;
+use App\Models\User;
+use Illuminate\Http\Request;
+
 
 class VehicleController extends Controller
 {
@@ -29,15 +32,39 @@ class VehicleController extends Controller
      */
     public function store(StoreVehicleRequest $request)
     {
-        //
+        $data = $request->validated();
+        $user = $request->user();
+        if ($user) {
+            $driver = $user->driver;
+            if ($driver) {
+                $vehicle = $driver->vehicles()->create([
+                    'make' => $data['make'],
+                    'license_plate' => $data['license_plate'],
+                    'model' => $data['model'],
+                    'color' => $data['color'],
+                    'year' => $data['year'],
+                    'driver_id' => $driver->id,
+                ]);
+                return response()->json($vehicle);
+            }
+        }
+        return response()->json(['message' => 'Driver not found']);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Vehicle $vehicle)
+    public function show($phone)
     {
-        //
+        $user = User::where('phone', $phone)->where('user_type')->first();
+        if ($user) {
+            $driver = $user->driver;
+            if ($driver) {
+                $vehicles = $driver->vehicles;
+                return response()->json($vehicles);
+            }
+        }
+        return response()->json(['message' => 'Driver not found']);
     }
 
     /**

@@ -33,9 +33,23 @@ class DriverController extends Controller
     public function store(StoreDriverRequest $request)
     {
         $data = $request->validated();
-        $user = User::create($data);
-        $user->assignRole('Driver');
-        return response()->json($user);
+        // return response()->json($data);
+        $user = User::create([
+            'name' => $data['name'],
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'password' => bcrypt('password'),
+            'user_type' => 'Driver'
+        
+        ]);
+
+        $user->driver()->create([
+            'license_number' => $data['license_number'],
+            'license_expiry' => $data['license_expiry'],
+            'user_id' => $user->id,
+        ]);
+        
+        return response()->json($user->load('driver'));
     }
 
     /**
@@ -46,7 +60,7 @@ class DriverController extends Controller
         $data = $request->validated();
         $user  = User::where('phone', $data['phone'])->where('user_type', 'Driver')->first();
         if ($user) {
-            return response()->json($user);
+            return response()->json($user->load('driver'));
         }
         return response()->json(['message' => 'Driver not found'], 404);
     }

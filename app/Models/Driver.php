@@ -8,4 +8,32 @@ use Illuminate\Database\Eloquent\Model;
 class Driver extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'license_number',
+        'license_expiry',
+        'user_id',
+    ];
+
+    /**
+     * Get the user that owns the driver.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the vehicles for the driver.
+     */
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
 }

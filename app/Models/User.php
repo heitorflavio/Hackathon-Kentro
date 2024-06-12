@@ -27,6 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'user_type',
     ];
 
     /**
@@ -61,5 +63,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the driver associated with the user.
+     */
+    public function driver()
+    {
+        return $this->hasOne(Driver::class);
     }
 }
